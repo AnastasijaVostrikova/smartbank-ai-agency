@@ -1,5 +1,29 @@
 # smartbank-ai-agency
 
+Features
+
+✅ Login Page
+
+✅ Boss Command Center
+
+✅ 8 AI Employees
+
+✅ Task Assignment
+
+✅ Live Task Board
+
+✅ Employee Overview
+
+✅ Agency Reporting
+
+✅ Project Manager Chat
+
+✅ Google Sheet Integration
+
+✅ Email Reporting
+
+✅ Hosted Streamlit Dashboard
+
 Live Dashboard
 
 Google Sheet:
