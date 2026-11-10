@@ -24,6 +24,22 @@ Features
 
 ✅ Hosted Streamlit Dashboard
 
+Access Information
+Boss Command Center
+
+Username: boss
+Password: smartbank123
+
+The Boss Command Center provides access to:
+
+Dashboard Overview
+Task Assignment
+Live Task Board
+Employee Overview
+Agency Reports
+Project Manager AI Chat
+Daily Email Reports
+
 Live Dashboard
 
 Google Sheet:
