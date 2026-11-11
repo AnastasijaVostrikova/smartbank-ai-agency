@@ -366,4 +366,261 @@ elif page == "Employee Overview":
 
     cols = st.columns(2)
 
-    for i, 
+    for i, emp in enumerate(employees):
+
+        with cols[i % 2]:
+
+            st.info(f"""
+### {emp}
+
+✅ Status: Active
+
+⚡ Availability: Online
+
+📋 Assigned Tasks: {len(st.session_state.tasks)}
+
+📈 Productivity Score: 95%
+
+🏦 Department: Banking Operations
+""")
+
+# =====================================================
+# EMPLOYEE PERFORMANCE
+# =====================================================
+
+elif page == "Employee Performance":
+
+    st.header("🏆 Employee Performance")
+
+    performance = pd.DataFrame({
+        "Employee": employees,
+        "Score": [98,95,93,97,91,89,94,92]
+    })
+
+    st.bar_chart(
+        performance.set_index("Employee")
+    )
+
+# =====================================================
+# REPORTS
+# =====================================================
+
+elif page == "Reports":
+
+    st.header("📊 Agency Reports")
+
+    df = st.session_state.tasks
+
+    if len(df) > 0:
+
+        chart = (
+            df["Status"]
+            .value_counts()
+            .reset_index()
+        )
+
+        chart.columns = ["Status", "Count"]
+
+        fig = px.bar(
+            chart,
+            x="Status",
+            y="Count",
+            color="Status"
+        )
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
+
+        csv = df.to_csv(index=False)
+
+        st.download_button(
+            "Download Report",
+            csv,
+            "SmartBank_Report.csv"
+        )
+
+# =====================================================
+# PROJECT MANAGER CHAT
+# =====================================================
+
+elif page == "Project Manager Chat":
+
+    st.header("🤖 Project Manager AI")
+
+    question = st.text_input(
+        "Ask a question"
+    )
+
+    if question:
+
+        q = question.lower()
+
+        if "completed" in q:
+
+            st.success(
+                f"Completed tasks: {len(st.session_state.tasks[st.session_state.tasks.Status == 'Completed'])}"
+            )
+
+        elif "employees" in q:
+
+            st.success(
+                "There are 8 active employees."
+            )
+
+        elif "tasks" in q:
+
+            st.success(
+                f"Current tasks: {len(st.session_state.tasks)}"
+            )
+
+        elif "swedbank" in q:
+
+            st.success(
+                "Swedbank currently has 3 open support requests."
+            )
+
+        elif "seb" in q:
+
+            st.success(
+                "SEB Bank currently has 2 open support requests."
+            )
+
+        elif "indexo" in q:
+
+            st.success(
+                "Indexo Bank currently has 1 open support request."
+            )
+
+        elif "luminor" in q:
+
+            st.success(
+                "Luminor currently has 4 open support requests."
+            )
+
+        elif "banks" in q or "partner" in q:
+
+            st.success(
+                "SmartBank AI currently supports Swedbank, SEB Bank, Indexo Bank and Luminor."
+            )
+
+        elif "fraud" in q:
+
+            st.success(
+                "Fraud Monitor reviewed 5 alerts today."
+            )
+
+        elif "loan" in q:
+
+            st.success(
+                "Loan Assistant reviewed 4 applications today."
+            )
+
+        else:
+
+            st.info(
+                "Try asking about tasks, employees, fraud, loans or partner banks."
+            )
+
+# =====================================================
+# EXTERNAL BANK ASSISTANCE
+# =====================================================
+
+elif page == "External Bank Assistance":
+
+    st.title("🤝 External Bank Assistance Center")
+
+    st.success(
+        "SmartBank AI supports other banks when assistance is required."
+    )
+
+    st.dataframe(
+        partner_banks,
+        use_container_width=True
+    )
+
+    selected_bank = st.selectbox(
+        "Select Bank",
+        partner_banks["Bank"]
+    )
+
+    support_type = st.selectbox(
+        "Support Type",
+        [
+            "Customer Support",
+            "Fraud Monitoring",
+            "Loan Assessment",
+            "Compliance Review",
+            "Financial Advisory"
+        ]
+    )
+
+    if st.button("Provide Assistance"):
+
+        st.success(
+            f"""
+Support Assigned
+
+Bank: {selected_bank}
+
+Service: {support_type}
+
+Status: In Progress
+"""
+        )
+
+# =====================================================
+# EMAIL REPORT
+# =====================================================
+
+elif page == "Email Report":
+
+    st.header("Daily Report")
+
+    completed = len(
+        st.session_state.tasks[
+            st.session_state.tasks.Status == "Completed"
+        ]
+    )
+
+    body = f"""
+SmartBank AI Daily Report
+
+Employees Active: 8
+
+Tasks Completed: {completed}
+
+Tasks In Progress:
+{len(st.session_state.tasks[st.session_state.tasks.Status=='In Progress'])}
+
+Fraud Reviews: 5
+
+Customer Cases: 12
+
+Loan Reviews: 4
+
+Generated By:
+Project Manager AI
+"""
+
+    st.code(body)
+
+    st.download_button(
+        "Download Report",
+        body,
+        "Daily_Report.txt"
+    )
+
+# =====================================================
+# AUDIT LOG
+# =====================================================
+
+elif page == "Audit Log":
+
+    st.header("📜 Audit Log")
+
+    st.dataframe(
+        st.session_state.tasks,
+        use_container_width=True
+    )
