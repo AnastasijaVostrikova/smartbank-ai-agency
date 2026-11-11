@@ -7,6 +7,43 @@ st.set_page_config(
     page_title="SmartBank AI Agency",
     layout="wide"
 )
+st.markdown("""
+<style>
+
+.stApp{
+    background: linear-gradient(135deg,#f7fbff,#e9f5ff);
+}
+
+h1,h2,h3{
+    color:#003366;
+}
+
+[data-testid="stSidebar"]{
+    background:linear-gradient(180deg,#003366,#0059b3);
+}
+
+[data-testid="stSidebar"] *{
+    color:white;
+}
+
+.stButton > button{
+    background:linear-gradient(90deg,#0078D4,#00AEEF);
+    color:white;
+    border:none;
+    border-radius:12px;
+    font-weight:bold;
+}
+
+div[data-testid="metric-container"]{
+    background:white;
+    border-radius:15px;
+    border:1px solid #d9eaf7;
+    padding:15px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.08);
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 # ----------------------------------
 # LOGIN
@@ -67,7 +104,32 @@ if "tasks" not in st.session_state:
             "Completion Time"
         ]
     )
-
+partner_banks = pd.DataFrame([
+    {
+        "Bank": "Swedbank",
+        "Country": "Latvia",
+        "Open Requests": 3,
+        "Priority": "High"
+    },
+    {
+        "Bank": "SEB Bank",
+        "Country": "Latvia",
+        "Open Requests": 2,
+        "Priority": "Medium"
+    },
+    {
+        "Bank": "Indexo Bank",
+        "Country": "Latvia",
+        "Open Requests": 1,
+        "Priority": "Low"
+    },
+    {
+        "Bank": "Luminor",
+        "Country": "Latvia",
+        "Open Requests": 4,
+        "Priority": "High"
+    }
+])
 # ----------------------------------
 # SIDEBAR
 # ----------------------------------
@@ -78,12 +140,16 @@ page = st.sidebar.radio(
     "Navigation",
     [
         "Dashboard",
+        "Executive Overview",
         "Task Assignment",
         "Live Task Board",
         "Employee Overview",
+        "Employee Performance",
         "Reports",
         "Project Manager Chat",
-        "Email Report"
+        "External Bank Assistance",
+        "Email Report",
+        "Audit Log"
     ]
 )
 
@@ -374,3 +440,151 @@ Project Manager AI
         body,
         "Daily_Report.txt"
     )
+
+elif page == "Executive Overview":
+
+    st.title("📈 Executive Overview")
+
+    st.success("""
+Today's Operations Summary
+
+✅ 42 Tasks Processed
+
+✅ 15 Customer Cases Closed
+
+✅ 5 Fraud Alerts Reviewed
+
+✅ 4 Loan Reviews Completed
+
+✅ 3 Churn Risks Identified
+
+✅ 4 Partner Banks Monitored
+
+✅ 100% Employee Availability
+""")
+
+elif page == "Employee Performance":
+
+    st.header("🏆 Employee Performance")
+
+    performance = pd.DataFrame({
+        "Employee": employees,
+        "Score":[98,95,93,97,91,89,94,92]
+    })
+
+    st.bar_chart(
+        performance.set_index("Employee")
+    )
+
+elif page == "External Bank Assistance":
+
+    st.title("🤝 External Bank Assistance Center")
+
+    st.success(
+        "SmartBank AI monitors partner banks and provides operational assistance when required."
+    )
+
+    st.dataframe(
+        partner_banks,
+        use_container_width=True
+    )
+
+    selected_bank = st.selectbox(
+        "Select Bank",
+        partner_banks["Bank"]
+    )
+
+    support_type = st.selectbox(
+        "Support Type",
+        [
+            "Customer Support",
+            "Fraud Monitoring",
+            "Loan Assessment",
+            "Compliance Review",
+            "Financial Advisory"
+        ]
+    )
+
+    if st.button("Provide Assistance"):
+
+        st.success(
+            f"""
+Support Team Assigned
+
+Bank: {selected_bank}
+
+Support Type: {support_type}
+
+Status: In Progress
+"""
+        )
+
+elif page == "Audit Log":
+
+    st.header("📜 Audit Log")
+
+    st.dataframe(
+        st.session_state.tasks,
+        use_container_width=True
+    )
+
+st.divider()
+
+st.subheader("🏦 Banking Network Status")
+
+c1,c2,c3,c4 = st.columns(4)
+
+c1.metric(
+    "Partner Banks",
+    4
+)
+
+c2.metric(
+    "Open Requests",
+    partner_banks["Open Requests"].sum()
+)
+
+c3.metric(
+    "Active Assistance Cases",
+    6
+)
+
+c4.metric(
+    "Resolved Today",
+    11
+)
+elif "swedbank" in q:
+    st.success(
+        "Swedbank currently has 3 open support requests."
+    )
+
+elif "seb" in q:
+    st.success(
+        "SEB Bank currently has 2 open support requests."
+    )
+
+elif "indexo" in q:
+    st.success(
+        "Indexo Bank currently has 1 open support request."
+    )
+
+elif "luminor" in q:
+    st.success(
+        "Luminor currently has 4 open support requests."
+    )
+
+elif "banks" in q or "partner" in q:
+    st.success(
+        "SmartBank AI currently supports Swedbank, SEB Bank, Indexo Bank and Luminor."
+    )
+
+elif "fraud" in q:
+    st.success(
+        "Fraud Monitor reviewed 5 alerts today."
+    )
+
+elif "loan" in q:
+    st.success(
+        "Loan Assistant reviewed 4 applications today."
+    )
+
