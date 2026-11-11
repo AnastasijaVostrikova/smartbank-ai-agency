@@ -3,10 +3,20 @@ import pandas as pd
 from datetime import datetime
 import plotly.express as px
 
+# =====================================================
+# PAGE CONFIG
+# =====================================================
+
 st.set_page_config(
     page_title="SmartBank AI Agency",
+    page_icon="🏦",
     layout="wide"
 )
+
+# =====================================================
+# STYLING
+# =====================================================
+
 st.markdown("""
 <style>
 
@@ -45,16 +55,17 @@ div[data-testid="metric-container"]{
 </style>
 """, unsafe_allow_html=True)
 
-# ----------------------------------
+# =====================================================
 # LOGIN
-# ----------------------------------
+# =====================================================
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
 
-    st.title("🏦 SmartBank AI Agency Login")
+    st.title("🏦 SmartBank AI Agency")
+    st.subheader("Boss Command Center Login")
 
     username = st.text_input("Username")
     password = st.text_input(
@@ -74,9 +85,9 @@ if not st.session_state.logged_in:
 
     st.stop()
 
-# ----------------------------------
-# EMPLOYEES
-# ----------------------------------
+# =====================================================
+# DATA
+# =====================================================
 
 employees = [
     "Project Manager",
@@ -89,21 +100,6 @@ employees = [
     "Customer Retention Strategist"
 ]
 
-if "tasks" not in st.session_state:
-
-    st.session_state.tasks = pd.DataFrame(
-        columns=[
-            "Task ID",
-            "Timestamp",
-            "Assigned By",
-            "Agent Name",
-            "Task Description",
-            "Priority",
-            "Status",
-            "Output Link",
-            "Completion Time"
-        ]
-    )
 partner_banks = pd.DataFrame([
     {
         "Bank": "Swedbank",
@@ -130,9 +126,37 @@ partner_banks = pd.DataFrame([
         "Priority": "High"
     }
 ])
-# ----------------------------------
+
+if "tasks" not in st.session_state:
+
+    st.session_state.tasks = pd.DataFrame([
+        {
+            "Task ID": "T001",
+            "Timestamp": "2026-11-10",
+            "Assigned By": "Boss",
+            "Agent Name": "Fraud & Security Monitor",
+            "Task Description": "Analyze suspicious transactions",
+            "Priority": "High",
+            "Status": "Completed",
+            "Output Link": "fraud_report.pdf",
+            "Completion Time": "25 min"
+        },
+        {
+            "Task ID": "T002",
+            "Timestamp": "2026-11-10",
+            "Assigned By": "Boss",
+            "Agent Name": "Customer Onboarding Specialist",
+            "Task Description": "Review new customer applications",
+            "Priority": "Medium",
+            "Status": "In Progress",
+            "Output Link": "",
+            "Completion Time": ""
+        }
+    ])
+
+# =====================================================
 # SIDEBAR
-# ----------------------------------
+# =====================================================
 
 st.sidebar.title("🏦 SmartBank AI")
 
@@ -153,20 +177,33 @@ page = st.sidebar.radio(
     ]
 )
 
-# ----------------------------------
+# =====================================================
 # DASHBOARD
-# ----------------------------------
+# =====================================================
 
 if page == "Dashboard":
 
-    st.title("SmartBank AI Customer Success Agency")
+    st.title("🏦 SmartBank AI Customer Success Agency")
 
-    c1,c2,c3,c4 = st.columns(4)
+    st.markdown("""
+### Autonomous Banking Operations & Partner Bank Support Platform
 
-    c1.metric(
-        "Employees",
-        8
-    )
+✅ Customer Onboarding
+
+✅ Fraud Monitoring
+
+✅ Product Recommendations
+
+✅ Loan Assistance
+
+✅ Customer Retention
+
+✅ External Bank Assistance
+""")
+
+    c1, c2, c3, c4 = st.columns(4)
+
+    c1.metric("Employees", 8)
 
     c2.metric(
         "Total Tasks",
@@ -177,7 +214,7 @@ if page == "Dashboard":
         "Completed",
         len(
             st.session_state.tasks[
-                st.session_state.tasks.Status=="Completed"
+                st.session_state.tasks["Status"] == "Completed"
             ]
         )
     )
@@ -186,260 +223,37 @@ if page == "Dashboard":
         "In Progress",
         len(
             st.session_state.tasks[
-                st.session_state.tasks.Status=="In Progress"
+                st.session_state.tasks["Status"] == "In Progress"
             ]
         )
     )
 
-# ----------------------------------
-# TASK ASSIGNMENT
-# ----------------------------------
+    st.divider()
 
-elif page == "Task Assignment":
+    st.subheader("🏦 Banking Network Status")
 
-    st.header("Assign New Task")
+    b1, b2, b3, b4 = st.columns(4)
 
-    with st.form("assign"):
+    b1.metric("Partner Banks", 4)
 
-        description = st.text_area(
-            "Task Description"
-        )
-
-        employee = st.selectbox(
-            "Employee",
-            employees
-        )
-
-        priority = st.selectbox(
-            "Priority",
-            ["Low","Medium","High"]
-        )
-
-        submit = st.form_submit_button(
-            "Assign"
-        )
-
-        if submit:
-
-            task = {
-                "Task ID":f"T{len(st.session_state.tasks)+1:03d}",
-                "Timestamp":datetime.now(),
-                "Assigned By":"Boss",
-                "Agent Name":employee,
-                "Task Description":description,
-                "Priority":priority,
-                "Status":"Queued",
-                "Output Link":"",
-                "Completion Time":""
-            }
-
-            st.session_state.tasks = pd.concat(
-                [
-                    st.session_state.tasks,
-                    pd.DataFrame([task])
-                ]
-            )
-
-            st.success("Task Assigned")
-
-# ----------------------------------
-# LIVE TASK BOARD
-# ----------------------------------
-
-elif page == "Live Task Board":
-
-    st.header("Live Task Board")
-
-    status = st.selectbox(
-        "Status Filter",
-        [
-            "All",
-            "Queued",
-            "In Progress",
-            "Blocked",
-            "Completed"
-        ]
+    b2.metric(
+        "Open Requests",
+        partner_banks["Open Requests"].sum()
     )
 
-    df = st.session_state.tasks
-
-    if status != "All":
-        df = df[df["Status"] == status]
-
-    st.dataframe(
-        df,
-        use_container_width=True
+    b3.metric(
+        "Active Assistance Cases",
+        6
     )
 
-# ----------------------------------
-# EMPLOYEE OVERVIEW
-# ----------------------------------
-
-elif page == "Employee Overview":
-
-    st.header("Employee Overview")
-
-    cols = st.columns(2)
-
-    for i, emp in enumerate(employees):
-
-        with cols[i % 2]:
-
-            st.info(
-f"""
-### {emp}
-
-Status: Active
-
-Tasks Assigned:
-{len(st.session_state.tasks)}
-
-Current State:
-Operational
-"""
-            )
-
-# ----------------------------------
-# REPORTS
-# ----------------------------------
-
-elif page == "Reports":
-
-    st.header("Agency Reports")
-
-    df = st.session_state.tasks
-
-    if len(df) > 0:
-
-        chart = (
-            df["Status"]
-            .value_counts()
-            .reset_index()
-        )
-
-        chart.columns = [
-            "Status",
-            "Count"
-        ]
-
-        fig = px.bar(
-            chart,
-            x="Status",
-            y="Count"
-        )
-
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
-
-# ----------------------------------
-# PROJECT MANAGER CHAT
-# ----------------------------------
-
-elif page == "Project Manager Chat":
-
-    st.header("Project Manager AI")
-
-    question = st.text_input(
-        "Ask a question"
+    b4.metric(
+        "Resolved Today",
+        11
     )
 
-    if question:
-
-        q = question.lower()
-
-        if "completed" in q:
-
-            st.success(
-                f"""
-Completed Tasks:
-{
-len(st.session_state.tasks[
-st.session_state.tasks.Status=="Completed"
-])
-}
-"""
-            )
-
-        elif "employees" in q:
-
-            st.success(
-                "There are 8 active employees."
-            )
-
-        elif "tasks" in q:
-
-            st.success(
-                f"""
-Current Tasks:
-{len(st.session_state.tasks)}
-"""
-            )
-
-        else:
-
-            st.info(
-                """
-Try:
-
-How many completed tasks?
-
-How many employees?
-
-How many tasks?
-"""
-            )
-
-# ----------------------------------
-# EMAIL REPORTS
-# ----------------------------------
-
-elif page == "Email Report":
-
-    st.header("Daily Report")
-
-    completed = len(
-        st.session_state.tasks[
-            st.session_state.tasks.Status=="Completed"
-        ]
-    )
-
-    body = f"""
-SmartBank AI Daily Report
-
-Employees Active: 8
-
-Tasks Completed:
-{completed}
-
-Tasks In Progress:
-{
-len(st.session_state.tasks[
-st.session_state.tasks.Status=="In Progress"
-])
-}
-
-Fraud Reviews:
-5
-
-Customer Cases:
-12
-
-Loan Reviews:
-4
-
-Generated By:
-Project Manager AI
-"""
-
-    st.code(body)
-
-    st.download_button(
-        "Download Report",
-        body,
-        "Daily_Report.txt"
-    )
+# =====================================================
+# EXECUTIVE OVERVIEW
+# =====================================================
 
 elif page == "Executive Overview":
 
@@ -463,128 +277,93 @@ Today's Operations Summary
 ✅ 100% Employee Availability
 """)
 
-elif page == "Employee Performance":
+# =====================================================
+# TASK ASSIGNMENT
+# =====================================================
 
-    st.header("🏆 Employee Performance")
+elif page == "Task Assignment":
 
-    performance = pd.DataFrame({
-        "Employee": employees,
-        "Score":[98,95,93,97,91,89,94,92]
-    })
+    st.header("Assign New Task")
 
-    st.bar_chart(
-        performance.set_index("Employee")
-    )
+    with st.form("assign"):
 
-elif page == "External Bank Assistance":
+        description = st.text_area(
+            "Task Description"
+        )
 
-    st.title("🤝 External Bank Assistance Center")
+        employee = st.selectbox(
+            "Employee",
+            employees
+        )
 
-    st.success(
-        "SmartBank AI monitors partner banks and provides operational assistance when required."
-    )
+        priority = st.selectbox(
+            "Priority",
+            ["Low", "Medium", "High"]
+        )
 
-    st.dataframe(
-        partner_banks,
-        use_container_width=True
-    )
+        submit = st.form_submit_button("Assign")
 
-    selected_bank = st.selectbox(
-        "Select Bank",
-        partner_banks["Bank"]
-    )
+        if submit:
 
-    support_type = st.selectbox(
-        "Support Type",
+            task = {
+                "Task ID": f"T{len(st.session_state.tasks)+1:03d}",
+                "Timestamp": datetime.now(),
+                "Assigned By": "Boss",
+                "Agent Name": employee,
+                "Task Description": description,
+                "Priority": priority,
+                "Status": "Queued",
+                "Output Link": "",
+                "Completion Time": ""
+            }
+
+            st.session_state.tasks = pd.concat(
+                [
+                    st.session_state.tasks,
+                    pd.DataFrame([task])
+                ],
+                ignore_index=True
+            )
+
+            st.success("Task Assigned")
+
+# =====================================================
+# LIVE TASK BOARD
+# =====================================================
+
+elif page == "Live Task Board":
+
+    st.header("Live Task Board")
+
+    status = st.selectbox(
+        "Status Filter",
         [
-            "Customer Support",
-            "Fraud Monitoring",
-            "Loan Assessment",
-            "Compliance Review",
-            "Financial Advisory"
+            "All",
+            "Queued",
+            "In Progress",
+            "Blocked",
+            "Completed"
         ]
     )
 
-    if st.button("Provide Assistance"):
+    df = st.session_state.tasks.copy()
 
-        st.success(
-            f"""
-Support Team Assigned
-
-Bank: {selected_bank}
-
-Support Type: {support_type}
-
-Status: In Progress
-"""
-        )
-
-elif page == "Audit Log":
-
-    st.header("📜 Audit Log")
+    if status != "All":
+        df = df[df["Status"] == status]
 
     st.dataframe(
-        st.session_state.tasks,
+        df,
         use_container_width=True
     )
 
-st.divider()
+# =====================================================
+# EMPLOYEE OVERVIEW
+# =====================================================
 
-st.subheader("🏦 Banking Network Status")
+elif page == "Employee Overview":
 
-c1,c2,c3,c4 = st.columns(4)
+    st.header("Employee Overview")
 
-c1.metric(
-    "Partner Banks",
-    4
-)
+    cols = st.columns(2)
 
-c2.metric(
-    "Open Requests",
-    partner_banks["Open Requests"].sum()
-)
-
-c3.metric(
-    "Active Assistance Cases",
-    6
-)
-
-c4.metric(
-    "Resolved Today",
-    11
-)
-elif "swedbank" in q:
-    st.success(
-        "Swedbank currently has 3 open support requests."
-    )
-
-elif "seb" in q:
-    st.success(
-        "SEB Bank currently has 2 open support requests."
-    )
-
-elif "indexo" in q:
-    st.success(
-        "Indexo Bank currently has 1 open support request."
-    )
-
-elif "luminor" in q:
-    st.success(
-        "Luminor currently has 4 open support requests."
-    )
-
-elif "banks" in q or "partner" in q:
-    st.success(
-        "SmartBank AI currently supports Swedbank, SEB Bank, Indexo Bank and Luminor."
-    )
-
-elif "fraud" in q:
-    st.success(
-        "Fraud Monitor reviewed 5 alerts today."
-    )
-
-elif "loan" in q:
-    st.success(
-        "Loan Assistant reviewed 4 applications today."
-    )
-
+    for i, 
